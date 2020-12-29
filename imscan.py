@@ -157,17 +157,22 @@ display_ports = []
 
 def try_port(ip, port, delay, open_ports):
 
-    sock    = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.settimeout(delay)
-    result  = sock.connect_ex((ip, port))
+	try:
+		sock    = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		sock.settimeout(delay)
+		result  = sock.connect_ex((ip, port))
 
-    if result == 0:
-        open_ports[port] = 'open'
-        return True
-    else:
-        open_ports[port] = 'closed'
-        return None
+		if result == 0:
+			open_ports[port] = 'open'
+			return True
+		else:
+			open_ports[port] = 'closed'
+			return None
+	except:
+		pass
+
+	
 
 def scan_ports(ip, delay, ports_scan):
     for port in range(0, ports_scan-1):
@@ -181,11 +186,14 @@ def scan_ports(ip, delay, ports_scan):
         threads[i].join()
 
     for i in range (0, ports_scan-1):
-        if open_ports[i] == 'open':
-            print(f'\nPort {str(i)} is {Back.GREEN}OPEN')
-            display_ports.append(i)
-        if i == ports_scan-2:
-            print('\nScan Complete!')
+    	try:
+    		if open_ports[i] == 'open':
+    			print(f'\nPort {str(i)} is {Back.GREEN}OPEN')
+    			display_ports.append(i)
+    		if i == ports_scan-2:
+    			print('\nScan Complete!')
+    	except:
+    		pass
 
 if __name__ == '__main__':
     # Time scanner initiated
